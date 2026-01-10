@@ -1,1 +1,3 @@
-﻿  OpenGL-GLFW.vcxproj -> C:\Users\nater\source\repos\OpenGL-GLFW\x64\Debug\OpenGL-GLFW.exe
+﻿  glad.c
+  main.cpp
+  OpenGL-GLFW.vcxproj -> C:\Users\nater\OpenGL-Project\x64\Debug\OpenGL-GLFW.exe
