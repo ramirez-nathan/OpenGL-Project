@@ -1,3 +1,0 @@
-﻿  main.cpp
-C:\Users\nater\source\repos\OpenGL-GLFW\main.cpp(156,44): warning C4100: 'window': unreferenced parameter
-  OpenGL-GLFW.vcxproj -> C:\Users\nater\source\repos\OpenGL-GLFW\x64\Debug\OpenGL-GLFW.exe
