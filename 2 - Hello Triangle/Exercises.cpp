@@ -1,5 +1,5 @@
 #include "main.h"
-#ifndef EXERCISES_CPP
+#ifdef EXERCISES_CPP
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -17,35 +17,35 @@ const char* vertexShaderSource = "#version 330 core\n" // basic vertex shader
 "layout (location = 0) in vec3 aPos;\n"
 "void main()\n"
 "{\n"
-	// whatever this is set to will be used as output of the shader
-"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n" 
-"}\0"; 
+// whatever this is set to will be used as output of the shader
+"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+"}\0";
 // ^ as simple as we can get, no processing whatsoever on input data
 // simply fowarded it to the shaders output
 
 const char* fragmentShaderSource = "#version 330 core\n" // basic fragment shader
 "out vec4 FragColor;\n" // fragment shader needs 1 output var (FragColor), 
-                        // a vec4 that defines the final color output 
-"void main()\n" 
-"{\n"
-"   FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
-"}\n\0";
-int main() 
+						// a vec4 that defines the final color output 
+	"void main()\n"
+	"{\n"
+	"   FragColor = vec4(0.0f, 0.0f, 0.0f, 1.0f);\n"
+	"}\n\0";
+int main()
 {
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
 	// setting glfw version boundaries
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	// explicity declare only core profile to use
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	// ------------------------------
 
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
 	if (window == NULL)
 	{
-		std::cout << "Failed to create GLFW window" << std::endl; 
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
@@ -93,22 +93,23 @@ int main()
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
-	
+
 	// check for shader program compile time errors
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success) 
+	if (!success)
 	{
 		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 	}
 	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader); 
+	glDeleteShader(fragmentShader);
 
 	// Vertex Data & Attributes Configuration (and Buffers) ----------------------
+	// Ex1.1 - Change equilateral tri to a right tri
 	float vertices[] = { // z-depth is 0 to make it look 2D
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, // lower left corner
+		 0.5f, -0.5f, 0.0f, // lower right corner
+		-0.5f,  0.5f, 0.0f // upper left corner
 	};
 	unsigned int VBO, VAO; // vertex buffer object, referenced by ID
 	glGenBuffers(1, &VBO);
@@ -120,12 +121,12 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// ^ GL_STATIC_DRAW b/c position data doesn't change, is used a lot,
 	// and stays the same for every render call
-	
+
 	// Specify how OpenGL should interpret the vertex data
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	
-	
+
+
 	// render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -153,7 +154,7 @@ int main()
 
 	// terminate, clearing all prev. allocated glfw resources
 	glfwTerminate();
- 	return 0;
+	return 0;
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
