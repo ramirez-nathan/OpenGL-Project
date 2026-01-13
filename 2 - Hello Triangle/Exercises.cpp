@@ -111,13 +111,14 @@ int main()
 		 0.5f, -0.5f, 0.0f, // lower right corner
 		-0.5f,  0.5f, 0.0f // upper left corner
 	};
-	unsigned int VBO, VAO; // vertex buffer object, referenced by ID
-	glGenBuffers(1, &VBO);
-	glGenVertexArrays(1, &VAO);
-	// bind the Vertex Array Object first, then bind and set vertext buffer(s), and then configure vertex attributes
-	glBindVertexArray(VAO);
+	// making them VAOs and VBOs, arrays of size 1
+	GLuint VBOs [1], VAOs [1]; // vertex buffer object, referenced by ID
+	glGenBuffers(1, VBOs);
+	glGenVertexArrays(1, VAOs);
+	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes
+	glBindVertexArray(VAOs[0]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind buffer to target buffer object
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]); // bind buffer to target buffer object
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// ^ GL_STATIC_DRAW b/c position data doesn't change, is used a lot,
 	// and stays the same for every render call
@@ -139,7 +140,7 @@ int main()
 
 		// draw triangle
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
+		glBindVertexArray(VAOs[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		// glBindVertexArray(0); // no need to unbind it every time as we only have a single VAO
 
@@ -148,8 +149,8 @@ int main()
 		glfwPollEvents();
 	}
 	// de-allocate all resources once they've outlived their purpose:
-	glDeleteVertexArrays(1, &VAO);
-	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, VAOs);
+	glDeleteBuffers(1, VBOs);
 	glDeleteProgram(shaderProgram);
 
 	// terminate, clearing all prev. allocated glfw resources
