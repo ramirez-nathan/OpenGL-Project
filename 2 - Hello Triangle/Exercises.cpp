@@ -107,9 +107,14 @@ int main()
 	// Vertex Data & Attributes Configuration (and Buffers) ----------------------
 	// Ex1.1 - Change equilateral tri to a right tri
 	float vertices[] = { // z-depth is 0 to make it look 2D
+		// left right triangle
 		-0.5f, -0.5f, 0.0f, // lower left corner
 		 0.5f, -0.5f, 0.0f, // lower right corner
-		-0.5f,  0.5f, 0.0f // upper left corner
+		-0.5f,  0.5f, 0.0f, // upper left corner
+		// right right triangle
+		 0.5f,  0.5f, 0.0f, // upper right corner
+		 0.5f, -0.5f, 0.0f, // upper left corner
+		-0.5f,  0.5f, 0.0f  // lower right corner
 	};
 	unsigned int VBO, VAO; // vertex buffer object, referenced by ID
 	glGenBuffers(1, &VBO);
@@ -140,7 +145,7 @@ int main()
 		// draw triangle
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawArrays(GL_TRIANGLES, 0, 6); // 6 points, square
 		// glBindVertexArray(0); // no need to unbind it every time as we only have a single VAO
 
 		// glfw business - poll IO events and swap buffers
