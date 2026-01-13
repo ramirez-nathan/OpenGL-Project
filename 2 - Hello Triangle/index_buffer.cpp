@@ -1,5 +1,5 @@
 #include "main.h"
-#ifdef EXERCISES_CPP
+#ifdef INDEXBUFFER_CPP
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -105,29 +105,26 @@ int main()
 	glDeleteShader(fragmentShader);
 
 	// Vertex Data & Attributes Configuration (and Buffers) ----------------------
-	// Ex3.1 - draw an outline of the square (only need 4 points)
 	float vertices[] = { // z-depth is 0 to make it look 2D
-		// left right triangle
-		-0.5f, -0.5f, // lower left corner
-		 0.5f, -0.5f, // lower right corner
-		 0.5f,  0.5f, // upper right corner
-		 -0.5f,  0.5f, // upper left corner
+		-0.5f, -0.5f, 0.0f, 
+		 0.5f, -0.5f, 0.0f, 
+		 0.0f,  0.5f, 0.0f
 	};
 
-	// making them VAOs and VBOs, arrays of size 1
-	GLuint VBOs [1], VAOs [1]; // vertex buffer object, referenced by ID
-	glGenBuffers(1, VBOs);
-	glGenVertexArrays(1, VAOs);
-	// bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes
-	glBindVertexArray(VAOs[0]);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]); // bind buffer to target buffer object
+	unsigned int VBO, VAO; // vertex buffer object, referenced by ID
+	glGenBuffers(1, &VBO);
+	glGenVertexArrays(1, &VAO);
+	// bind the Vertex Array Object first, then bind and set vertext buffer(s), and then configure vertex attributes
+	glBindVertexArray(VAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); // bind buffer to target buffer object
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	// ^ GL_STATIC_DRAW b/c position data doesn't change, is used a lot,
 	// and stays the same for every render call
 
 	// Specify how OpenGL should interpret the vertex data
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 
@@ -143,8 +140,8 @@ int main()
 
 		// draw triangle
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAOs[0]);
-		glDrawArrays(GL_LINE_LOOP, 0, 4); // 4 points, square outline
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		// glBindVertexArray(0); // no need to unbind it every time as we only have a single VAO
 
 		// glfw business - poll IO events and swap buffers
@@ -152,8 +149,8 @@ int main()
 		glfwPollEvents();
 	}
 	// de-allocate all resources once they've outlived their purpose:
-	glDeleteVertexArrays(1, VAOs);
-	glDeleteBuffers(1, VBOs);
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 	glDeleteProgram(shaderProgram);
 
 	// terminate, clearing all prev. allocated glfw resources

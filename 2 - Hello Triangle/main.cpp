@@ -1,5 +1,5 @@
 #include "main.h"
-#ifndef EXERCISES_CPP
+#ifdef MAIN_CPP
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
