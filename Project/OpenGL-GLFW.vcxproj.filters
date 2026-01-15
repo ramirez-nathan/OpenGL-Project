@@ -41,7 +41,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="main.h">
+    <ClInclude Include="Exercises.h">
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="shaderClass.h">
