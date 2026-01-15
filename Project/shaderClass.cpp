@@ -80,7 +80,15 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 
 void Shader::Activate()
 {
-	glUseProgram(ID);
+	// Retrieve time in seconds
+	GLfloat timeValue = glfwGetTime();
+	// Vary color in range of 0.0 - 1.0 by using sin function
+	GLfloat greenValue { (sin(timeValue) / 2.0f) + 0.5f };
+	// Query the location of ourColor uniform 
+	GLint vertexColorLocation{ glGetUniformLocation(ID, "ourColor") };
+	glUseProgram(ID); 
+	// Must use shader program first, as this sets the uniform on the current active shader program
+	glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f); 
 }
 
 void Shader::Delete()
