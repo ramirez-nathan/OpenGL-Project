@@ -87,12 +87,15 @@ int main()
 	EBO EBO1(indices, sizeof(indices));
 
 	// Links VBO to VAO
+	//                          /type    /stride             /offset
 	VAO1.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
 	VAO1.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	// Unbind so we cant accidentally modify these
+	// Unbind so we cant accidentally modify these 
 	VAO1.Unbind();
 	VBO1.Unbind();
 	EBO1.Unbind();
+
+	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
 	// render loop
 	while (!glfwWindowShouldClose(window))
@@ -105,7 +108,9 @@ int main()
 		// Clean the back buffer and assign the new color to it
 		glClear(GL_COLOR_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
-		shaderProgram.Activate();
+		shaderProgram.Activate(); 
+		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
+		glUniform1f(uniID, 0.5f); 
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		//  Draw primitives, number of indices, datatype of indices, index of indices
