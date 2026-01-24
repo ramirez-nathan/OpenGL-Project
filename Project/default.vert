@@ -15,9 +15,14 @@ out vec2 texCoord;
 // Controls the scale of the vertices
 uniform float scale; 
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 proj;
+
+
 void main() // specify a color output to the fragment shader
 {
-	gl_Position = vec4(aPos.x + aPos.x * scale, -aPos.y - aPos.y * scale, aPos.z + aPos.z * scale, 1.0); // see how we directly give a vec3 to vec4's constructor
+	gl_Position = proj * view * model * vec4(aPos, 1.0); // see how we directly give a vec3 to vec4's constructor
 	ourColor = aColor; // set ourColor to the input color we got from the vertex data
-	texCoord = aTex;
+	texCoord = vec2(aTex.x, aTex.y);
 }	

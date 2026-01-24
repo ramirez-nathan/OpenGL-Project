@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\Downloads\stupid_patrick.png" />
+    <Image Include="..\..\..\..\Downloads\vro.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

@@ -4,6 +4,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include "shaderClass.h"
 #include "Texture.h"
@@ -17,20 +20,25 @@ const unsigned int SCR_WIDTH{ 800 };
 const unsigned int SCR_HEIGHT{ 600 };
 
 // Vertex Data & Attributes Configuration (and Buffers) ----------------------
-GLfloat vertices[] = // z-depth is 0 to make it look 2D
-{ //   COORDINATES          /     COLORS           //
-  //  x      y     z          r    g     b
-	-0.5f, -0.5f, 0.0f,     1.0f, 0.0f, 0.0f,	0.0f, 0.0f,// Lower left corner 0
-	-0.5f,  0.5f, 0.0f,     0.0f, 1.0f, 0.0f,	1.5f, 3.0f,// Upper left corner 1
-	 //0.5f,  0.5f, 0.0f,     0.0f, 0.0f, 1.0f,	1.0f, 1.0f,// Upper right corner 2
-	 0.5f, -0.5f, 0.0f,     1.0f, 1.0f, 1.0f,	3.0f, 0.0f,// Lower right corner 3
+// Vertices coordinates
+GLfloat vertices[] =
+{ //     COORDINATES     /        COLORS          /    TexCoord  //
+	-0.5f, -0.0f,  0.5f,     0.83f, 0.70f, 0.44f,     0.0f, 0.0f, 
+	-0.5f,  0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	  5.0f, 0.0f, 
+	 0.5f,  0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	  0.0f, 0.0f, 
+	 0.5f, -0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	  5.0f, 0.0f,  
+	 0.0f,  0.8f,  0.0f,     0.93f, 0.86f, 0.76f,	  2.5f, 5.0f,  
 };
 
 // Indices for vertices order
 GLuint indices[] =
 {
-	0, 2, 1, // Upper left triangle 
-	//0, 3, 2, // Lower right triangle
+	0, 2, 1, 
+	0, 3, 2, 
+	0, 1, 4,
+	1, 2, 4, 
+	2, 3, 4, 
+	3, 0, 4
 };
 
 int main()
@@ -98,15 +106,18 @@ int main()
 	// Gets ID of uniform called "scale"
 	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
 
-	// Texture 
+	// Textures
 	Texture stupidPatrick("stupid_patrick.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	stupidPatrick.texUnit(shaderProgram, "tex0", 0);
 
-	// the time of the last tick
-	float lastTime{ 0.0f };
-	// added scale for triangle
-	float scale{ 0.0f };
-	// Main while loop
+	Texture vro("vro.png", GL_TEXTURE_2D, GL_TEXTURE1, GL_RGBA, GL_UNSIGNED_BYTE);
+	vro.texUnit(shaderProgram, "tex1", 1);
+	
+	float rotation{ 0.0f };
+	double prevTime{ glfwGetTime() };
+
+	glEnable(GL_DEPTH_TEST);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		// input
@@ -114,23 +125,41 @@ int main()
 		// Specify the new color of the background before clearing
 		glClearColor(0.9372f, 0.8353f, 0.991f, 1.0f);
 		// Clean the back buffer and assign the new color to it
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate(); 
-		// Changes "scale" at 60fps
-		if (glfwGetTime() - lastTime > 1.0f / 60.0f)
+
+		double crntTime{ glfwGetTime() };
+		if (crntTime - prevTime >= 1 / 60)
 		{
-			scale += 0.05f;
-			lastTime = glfwGetTime();
+			rotation += 0.5f;
+			prevTime = crntTime;
 		}
+
+		// Initialization of 4x4 matrices
+		glm::mat4 model{ glm::mat4(1.0f) };
+		glm::mat4 view{ glm::mat4(1.0f) };
+		glm::mat4 proj{ glm::mat4(1.0f) };
+
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(0.0f, -0.5f, -2.0f));
+		proj = glm::perspective(glm::radians(45.0f), (float)(SCR_WIDTH / SCR_HEIGHT), 0.1f, 100.0f);
+
+		int modelLoc{ glGetUniformLocation(shaderProgram.ID, "model") };
+		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+		int viewLoc{ glGetUniformLocation(shaderProgram.ID, "view") };
+		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+		int projLoc{ glGetUniformLocation(shaderProgram.ID, "proj") };
+		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
+
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
-		glUniform1f(uniID, 0.1f * sin(scale)); 
+		glUniform1f(uniID, 0.5f); 
 		// Binds the texture so that it appears in rendering
-		stupidPatrick.Bind();
+		
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		//  Draw primitives, number of indices, datatype of indices, index of indices
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int), GL_UNSIGNED_INT, 0);
 		// glfw business - poll IO events and swap buffers
 		glfwSwapBuffers(window);
 		// take care of all GLFW events

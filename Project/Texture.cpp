@@ -8,7 +8,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	// Stores the width, height, and the number of color channels of the image
 	int widthImg, heightImg, numColCh;
 	// Flips the image 
-	//stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(true);
 	// Reads the image from a file and stores it in bytes
 	unsigned char* bytes = stbi_load(image, &widthImg, &heightImg, &numColCh, 0);
 
@@ -44,7 +44,7 @@ Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, 
 	stbi_image_free(bytes);
 
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
-	glBindTexture(texType, 0);
+	//glBindTexture(texType, 0);
 }
 
 void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
